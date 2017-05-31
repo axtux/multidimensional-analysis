@@ -1,0 +1,5 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {french}
+\beamer@sectionintoc {1}{Description de NN}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Machine Learning}{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{Neural Networks (NN)}{5}{0}{1}
