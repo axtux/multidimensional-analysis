@@ -64,26 +64,6 @@
 		\tableofcontents
 	\end{frame}
 
-	
-	\begin{comment}
-		
-		Structure du rapport de flo et clément
-	
-		\section{Description de CART}
-		\subsection{Introduction}
-		\frametitle{Définition}
-		\subsection{Algorithme de construction le l'arbre 	CART}
-		\frametitle{Comment l'arbre est-il construit ?}
-		\frametitle{Exemple sur le jeu de données Titanic 	fourni avec R}	
-		\section{Implémentation dans R}
-		\frametitle{Introduction}
-		\frametitle{Jeu de données}
-		\frametitle{Création de l'arbre}
-		\frametitle{Arbre final}
-		\frametitle{Vérification du choix des tests}	
-		\frametitle{Prédiction de la valeur d'une variable}
-	\end{comment}
-
 	\section{Description de NN}
 		\subsection{Machine Learning}
 			\begin{frame}
@@ -98,7 +78,7 @@
 			\begin{frame}
 				\frametitle{Machine Learning}
 				\begin{alertblock}{Utilisation}
-					Comme expliqué précédemment, il s'agit d'une solution approchée. Dans le cas ou il existe un algorithme efficace il sera préférable de l'utiliser
+					Comme expliqué précédemment, il s'agit d'une solution approchée. Dans le cas ou il existe un algorithme efficace il sera préférable de l'utiliser.
 				\end{alertblock}
 				
 				\begin{block}{Exemples}
@@ -124,14 +104,108 @@
 			\end{frame}
 
 
+			\begin{frame}
+				\frametitle{Neural Networks}
+				\begin{block}{Types de réseaux de neurones}
+					\begin{itemize}
+						\item Deep Neural Network (DNN) : Réseau avec un grand nombre de couches.
+						\item Convolutional Neural Network (CNN) : Inspiré du fonctionnement de la vue, les couches de neurones ici sont à plus d'une dimension.
+						\item Recurrent Neural Network (RNN) : Réseau où la sortie est réintroduite dans le réseau pour les tests suivants : effet mémoire. 
+					\end{itemize}
+				\end{block}
+				
+				=> Nous nous concentrerons sur les DNN, avec peu de couche dans l'exemple (3).
+			\end{frame}
+	
+			
+			\begin{frame}
+				\frametitle{Fonctionnement global}
+					Dans le cas où on a $n$ paramètres, comment trouver $f(x_1, x_2, ..., x_n)$ ?
+				
+				
+					Si la fonction est trop compliquée pour être écrite directement, on prend des \emph{exemples}, où l'on connaît déjà l'image par notre fonction pour certaines entrées. Typiquement, des milliers (millions). Ces exemples, nous les donnons à un réseau de neurones, constitué des fonctions mathématiques simples reliées par des arcs pondérés. Ils jouent le rôle \emph{d'axiome}.
+					
+					
+					Nous donnons les exemples au réseau qui ajuste les poids pour approximer au mieux la fonction, tout en la généralisant.
+					
+					
+					Maintenant, en lui présentant des variables, le réseau peut \emph{prédire} $f(x_1, x_2, ..., x_n)$.
+			\end{frame}
+
+
+		\subsection{DNN}
+			\begin{frame}
+				\frametitle{Structure des couches}
+				3 types de couches :
+				\begin{itemize}
+					\item L'entrée : Couche correspondant aux variables à évaluer
+					\item Les couches "cachée" : Couches correspondant au comportement interne du réseau, le nombre de couches dépend du problème, et il n'y a pas de règles prédisant le nombre de couches nécessaires. De nombreuses opérations mathématiques se font ici.
+					\item La sortie : Couche retournant un nombre correspondant soit à une classe, soit à la valeur d'évaluation des paramètres d'entrées
+				\end{itemize}
+				
+				Tous les neurones (décrits plus tard) sont dans une couche et une seule. Ceux-ci sont interconnectés avec tous les neurones de la couche précédente et tous ceux de la suivante, et rien d'autre (parfois avec un poids 0 cependant).
+				
+			\end{frame}
+
+
+			\begin{frame}
+				\frametitle{Couche cachée}
+				\hspace{6em}%
+				\vspace{6em}
+				\includegraphics[height=120px]{img/hidden_layer}\hspace{2em}%
+				\includegraphics[height=120px]{img/neurone}
+				\vspace{-4em}				
+			\end{frame}
+			
+			\begin{frame}
+				\frametitle{Fonction d'activation}
+				Chaque neurone reçoit les valeurs de la couche précédente, ainsi qu'un offset, qui est propre à toute la couche actuelle.
+				Il en effectue une transformation linéaire (ici, avec les poids 1, 1, 1), mais on pourrait très bien imaginer $activation(0.2*w1 + 1.4*w2 - 2.1)$.
+				Le soucis, c'est qu'on pourrait vite finir avec des résultats très grand, si notre fonction d'activation ne présente pas de caractéristique spécifique : être bornée sur le domaine des images (et continue).
+				
+				La fonction d'activation appliquée sur la transformation linéaire la plus répandue est la sigmoïde, qui retourne un résultat entre 0 et 1 : 
+				$$  \frac{1}{1 + e^{-x}} $$				
+			\end{frame}
+
+			
+			\begin{frame}
+				\frametitle{Backpropagation}
+				\begin{alertblock}{C'est fini ?}
+					On a un réseau de neurones, c'est bien beau, mais comment définir les poids ?
+				\end{alertblock}
+				
+				Il existe plusieurs stratégies pour les initialiser, mais il est tout à fait valable de commencer avec des poids aléatoires.
+				Vous vous souvenez des exemples pour l'entraîner ? C'est ici qu'ils interviennent ! On nourrit le réseau avec les exemples un à un. On compare sa réponse avec le résultat attendu. Le taux d'erreur est très élevé au début.
+				
+				Heureusement ! Il existe un algorithme pour ajuster les poids \emph{en détectant lequel est le plus responsable de l'erreur}. Il s'agit de la backpropagation !				
+			\end{frame}
+
+
+			%Mettre un beau schema de la BP, avec les delta
+			% L'expliquer
+			
+			
+			%Attaquer l'exemple
+				%Choix du jour : DNN, exemple via les données de Boston (prix de l'habitation), avec un module neuralnet de R
+				%Utilisation du set de Boston
+				%Vérification : est-ce qu'il manque des valeurs ?
+				%Separation des donee de train et de test
+				%Normalisation de la matrice vers [0,1]
+				%Entrainement
+				%Test sur les données restantes
+				%Comparaison du resultat du NN avec la realite
+				%Test sur 10 exemples (melange des donnes)
+				%Pour generer une probabilite sur l'erreur de notre reseau
+				%Boite a moustache
+
 \section*{Sources}
 \begin{frame}
 \frametitle{Sources}
-\url{https://www.r-bloggers.com/fitting-a-neural-network-in-r-neuralnet-package/}\\
-\url{http://www.parallelr.com/r-deep-neural-network-from-scratch/}\\
-\url{https://www.youtube.com/watch?v=BR9h47Jtqyw}\\
-\url{http://doctor-morbius.deviantart.com/}\\
-\url{https://datascienceplus.com/fitting-neural-network-in-r/}%d'ou on tient le code !
+	\url{https://www.r-bloggers.com/fitting-a-neural-network-in-r-neuralnet-package/}\\
+	\url{http://www.parallelr.com/r-deep-neural-network-from-scratch/}\\
+	\url{https://www.youtube.com/watch?v=BR9h47Jtqyw}\\
+	\url{http://doctor-morbius.deviantart.com/}\\
+	\url{https://datascienceplus.com/fitting-neural-network-in-r/}%d'ou on tient le code !
 \end{frame}
 
 \end{document}
