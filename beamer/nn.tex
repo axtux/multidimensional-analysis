@@ -358,24 +358,6 @@ MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
 \end{lstlisting}
 \end{frame}
 
-
-\begin{frame}[fragile]
-\frametitle{Séparation des données}
-On notera 75\% de données réservées à l'entraînement. Elles sont mélangées avant d'être séparées. Sont également générés des modèles linéaires et autre fonction d'estimation.
-\begin{lstlisting}[language=R]
-#Separation des donee de train et de test
-alpha <- 0.75
-#sample randomize les rangees
-index <- sample(1:nrow(data),round(alpha*nrow(data)))
-train <- data[index,]
-test <- data[-index,]
-lm.fit <- glm(medv~., data=train)
-summary(lm.fit)
-pr.lm <- predict(lm.fit,test)
-MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
-\end{lstlisting}
-\end{frame}
-
 \begin{frame}[fragile]
 \frametitle{Normalisation de la matrice}
 \begin{lstlisting}[language=R]
