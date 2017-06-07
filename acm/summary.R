@@ -4,9 +4,6 @@ script.dir = dirname(sys.frame(1)$ofile)
 data.dir = paste(script.dir, "..", "data", sep='/')
 setwd(data.dir)
 
-# number of kept axes
-nf=5
-
 print("reading data file...")
 data = read.csv("winequality-red.csv", sep=";")
 
