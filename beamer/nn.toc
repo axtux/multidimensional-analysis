@@ -9,6 +9,7 @@
 \beamer@subsectionintoc {2}{1}{Choix de librairie}{17}{0}{2}
 \beamer@subsectionintoc {2}{2}{Donn\IeC {\'e}es utilis\IeC {\'e}es et objectif}{18}{0}{2}
 \beamer@subsectionintoc {2}{3}{Traitement des donn\IeC {\'e}es}{19}{0}{2}
-\beamer@subsectionintoc {2}{4}{Entra\IeC {\^\i }nement}{19}{0}{2}
-\beamer@subsectionintoc {2}{5}{Comparaison du r\IeC {\'e}sultat du NN avec la r\IeC {\'e}alit\IeC {\'e}}{19}{0}{2}
-\beamer@subsectionintoc {2}{6}{Fiabilit\IeC {\'e} du r\IeC {\'e}seau}{19}{0}{2}
+\beamer@subsectionintoc {2}{4}{Entra\IeC {\^\i }nement}{22}{0}{2}
+\beamer@subsectionintoc {2}{5}{Comparaison du r\IeC {\'e}sultat du NN avec un mod\IeC {\`e}le lin\IeC {\'e}aire}{24}{0}{2}
+\beamer@subsectionintoc {2}{6}{Fiabilit\IeC {\'e} du r\IeC {\'e}seau}{26}{0}{2}
+\beamer@subsectionintoc {2}{7}{Conclusion}{29}{0}{2}

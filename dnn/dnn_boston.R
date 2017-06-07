@@ -30,7 +30,7 @@ library(neuralnet)
 #Entrainement
 n <- names(train_)
 f <- as.formula(paste("medv ~", paste(n[!n %in% "medv"], collapse = " + ")))
-#On a donc un raison 13 - 5 - 3 - 1 (car 13 entree, une couche "hidden" de 5, une couche "hidden" de 3 et la sortie)
+#On a donc un réseau 13 - 5 - 3 - 1 (car 13 entree, une couche "hidden" de 5, une couche "hidden" de 3 et la sortie)
 nn <- neuralnet(f,data=train_,hidden=c(5,3),linear.output=T)
 plot(nn)
 
@@ -41,9 +41,9 @@ test.r <- (test_$medv)*(max(data$medv)-min(data$medv))+min(data$medv)
 MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test_)
 print(paste(MSE.lm,MSE.nn)) 
 
-#Comparaison du resultat du NN avec la realite
+#Comparaison du resultat du NN avec un ML
 par(mfrow=c(1,2))
-plot(test$medv,pr.nn_,col='red',main='Real vs predicted NN',pch=18,cex=0.7)
+plot(test$medv,pr.nn_,col='red',main='Linear model vs predicted NN',pch=18,cex=0.7)
 points(test$medv,pr.lm,col='blue',pch=18,cex=0.7)
 abline(0,1,lwd=2)
 legend('bottomright',legend=c('NN','LM'),pch=18,col=c('red','blue'))
