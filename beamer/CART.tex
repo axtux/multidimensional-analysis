@@ -13,6 +13,8 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{subfig}
+
+\usepackage{wrapfig} % in preamble
 \usetheme[navigation]{UMONS}
 
 \author{Benjamin André, Alexis Lecocq}
@@ -54,6 +56,9 @@
   morekeywords={*,...}            % if you want to add more keywords to the set
 } 
 
+
+
+
 \begin{document}
 
 	\begin{frame}
@@ -64,15 +69,18 @@
 		\tableofcontents
 	\end{frame}
 
-	\section{Description de NN}
+	\section{Description des NN}
 		\subsection{Machine Learning}
 			\begin{frame}
 				\frametitle{Machine Learning}
-				Lorsque nous voulons résoudre un problème algorithmiquement, nous devons donner la marche à suivre exacte du programme qui mène à une solution.
+				\begin{wrapfigure}{l}{0.5\linewidth}
+					\vspace{-2em}
+					\includegraphics[width=\linewidth]{img/faced}
+				\end{wrapfigure}
 				
-				Dans certains cas, celle-ci est trop complexe que pour être écrite de cette façon, et les paramètres d'entrée (position, température, couleur,..) peuvent influencer le résultat de façon très complexe.
+				Certains problèmes comme la reconnaissance faciale comportent trop de variables et des relations trop compliquées entre celles-ci pour être décrite efficacement de façon algorithmique.
 				
-				L'approche du machine learning propose de trouver une solution approchée en minimisant l'erreur.
+				On préférera le machine learning qui proposera une solution approchée grâce à l'apprentissage automatique.
 			\end{frame}
 			
 			\begin{frame}
@@ -114,26 +122,25 @@
 					\end{itemize}
 				\end{block}
 				
-				=> Nous nous concentrerons sur les DNN, avec peu de couche dans l'exemple (3).
+				=> Nous utiliserons une version généraliste de la technique, fonctionnant comme un DNN avec peu de couches.
 			\end{frame}
 	
 			
 			\begin{frame}
 				\frametitle{Fonctionnement global}
-					Dans le cas où on a $n$ paramètres, comment trouver $f(x_1, x_2, ..., x_n)$ ?
+					Comment trouver $f(x_1, x_2, ..., x_n)$ ?
 				
+					On l'écrit sous la forme $f(x_1, x_2, ..., x_n) = a(w_1 * z_1, w_2 * z_2, ..., w_n * z_n)$
+					
+					Où $z_i$ pourrait lui-même être le résultat d'une fonction mathématique.
+					
+					En composant les fonctions (avec un certain poids $\vec{w}$) jusqu'à des fonctions simples sur $\vec{x}$, on crée un réseau de neurones (fonctions).
 				
-					Si la fonction est trop compliquée pour être écrite directement, on prend des \emph{exemples}, où l'on connaît déjà l'image par notre fonction pour certaines entrées. Typiquement, des milliers (millions). Ces exemples, nous les donnons à un réseau de neurones, constitué des fonctions mathématiques simples reliées par des arcs pondérés. Ils jouent le rôle \emph{d'axiome}.
-					
-					
-					Nous donnons les exemples au réseau qui ajuste les poids pour approximer au mieux la fonction, tout en la généralisant.
-					
-					
-					Maintenant, en lui présentant des variables, le réseau peut \emph{prédire} $f(x_1, x_2, ..., x_n)$.
+					A force d'exemples, on ajuste les \emph{poids} (axones) $w_i$ afin d'approximer $f$.
 			\end{frame}
 
 
-		\subsection{DNN}
+		\subsection{Formulation générale}
 			\begin{frame}
 				\frametitle{Structure des couches}
 				3 types de couches :
@@ -143,7 +150,7 @@
 					\item La sortie : Couche retournant un nombre correspondant soit à une classe, soit à la valeur d'évaluation des paramètres d'entrées
 				\end{itemize}
 				
-				Tous les neurones (décrits plus tard) sont dans une couche et une seule. Ceux-ci sont interconnectés avec tous les neurones de la couche précédente et tous ceux de la suivante, et rien d'autre (parfois avec un poids 0 cependant).
+				Aucun neurone (décrits plus tard) n'est dans plusieurs couches. Ceux-ci sont interconnectés avec tous les neurones de la couche précédente et tous ceux de la suivante, et rien d'autre (parfois avec un poids 0 cependant).
 				
 			\end{frame}
 
@@ -159,44 +166,175 @@
 			
 			\begin{frame}
 				\frametitle{Fonction d'activation}
-				Chaque neurone reçoit les valeurs de la couche précédente, ainsi qu'un offset, qui est propre à toute la couche actuelle.
-				Il en effectue une transformation linéaire (ici, avec les poids 1, 1, 1), mais on pourrait très bien imaginer $activation(0.2*w1 + 1.4*w2 - 2.1)$.
-				Le soucis, c'est qu'on pourrait vite finir avec des résultats très grand, si notre fonction d'activation ne présente pas de caractéristique spécifique : être bornée sur le domaine des images (et continue).
 				
-				La fonction d'activation appliquée sur la transformation linéaire la plus répandue est la sigmoïde, qui retourne un résultat entre 0 et 1 : 
-				$$  \frac{1}{1 + e^{-x}} $$				
+				Chaque neurone effectue la somme pondérée par $w$ de tous les résultats de la couche précédente.\\
+				Par exemple : $(0.2*w1 + 1.4*w2 - 2.1)$.\\
+				Pour à cette somme, nous appliquons une fonction dite "d'activation".
+				
+				La fonction d'activation appliquée sur la transformation linéaire la plus répandue est la sigmoïde: 
+				$$  activation(x) = \frac{1}{1 + e^{-x}} \in \left[0, 1\right] $$				
 			\end{frame}
 
-			
+			\begin{frame}
+				\frametitle{Fonction d'activation}
+				
+				Cette fonction a plusieurs propriété intéressantes :
+				\begin{itemize}
+					\item $activation(x) \in [0, 1]$, utile pour borner le résultat et éviter une explosion des valeurs dans le réseau
+					\item Fonction continue sur $\Re$
+					\item Elle est dérivable en $activation(x) * (1 - activation(x))$, ce qui est utilisé dans le calcul de l'erreur
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}
+				\frametitle{Représentation}
+				\vspace{-2em}
+				\centerline{\includegraphics[width=0.3\linewidth]{img/deep_neural_network}}
+				\vspace{-1em}
+				\[
+					x = 
+					\begin{pmatrix}
+					x_1\\x_2\\x_3\\x_4
+					\end{pmatrix}
+					,
+					w_1 = \begin{pmatrix}
+					w_{{x_1}{h_1}} & w_{{x_1}{h_2}} & w_{{x_1}{h_3}} & w_{{x_1}{h_4}} \\
+					w_{{x_2}{h_1}} & w_{{x_2}{h_2}} & w_{{x_2}{h_3}} & w_{{x_2}{h_4}} \\
+					w_{{x_3}{h_1}} & w_{{x_3}{h_2}} & w_{{x_3}{h_3}} & w_{{x_3}{h_4}} \\
+					w_{{x_4}{h_1}} & w_{{x_4}{h_2}} & w_{{x_4}{h_3}} & w_{{x_4}{h_4}}
+					\end{pmatrix}				
+					,
+					w_2 \in \Re^{4x5}
+					, ... ,
+					y = 
+					\begin{pmatrix}
+					y_1\\y_2\\y_3
+					\end{pmatrix}
+					.
+				\]			
+								
+				Sans oublier les offset pour chaque couche, stockés séparément. On représente donc notre problème sous la forme matricielle.
+								
+				\end{frame}
+
+			\subsection{Backpropagation}
 			\begin{frame}
 				\frametitle{Backpropagation}
 				\begin{alertblock}{C'est fini ?}
 					On a un réseau de neurones, c'est bien beau, mais comment définir les poids ?
 				\end{alertblock}
 				
-				Il existe plusieurs stratégies pour les initialiser, mais il est tout à fait valable de commencer avec des poids aléatoires.
-				Vous vous souvenez des exemples pour l'entraîner ? C'est ici qu'ils interviennent ! On nourrit le réseau avec les exemples un à un. On compare sa réponse avec le résultat attendu. Le taux d'erreur est très élevé au début.
+				Plusieurs stratégies pour l'initialisation dont l'aléatoire.
+				Ensuite on nourri le réseau d'exemples. On mesure le taux d'erreur entre l'approximation et les données de résultat. A chaque fois, un algorithme appelé \emph{backpropagation} est appliqué pour ajuster les poids \emph{en détectant lequel est le plus responsable de l'erreur}.
+			\end{frame}
+			
+			\begin{frame}
+				\frametitle{Backpropagation}
+				Sans entrer trop dans les détails, ce que fait l'algorithme :
+		
+		\begin{tiny}
+				\begin{algorithm}[H]
+					\SetKwData{Left}{left}\SetKwData{This}{this}\SetKwData{Up}{up}
+					\SetKwFunction{Union}{Union}\SetKwFunction{FindCompress}{FindCompress}
+					\SetKwInput{Entree}{Entrées}
+					\SetKwInput{Effet}{Effets}
+					\SetKwInput{Sortie}{Sorties}
+					\SetKw{Retour}{retourner}
+					\SetKwFor{Pour}{pour}{faire}{finpour}
+					\SetKwFor{Tq}{tant que}{faire}{fintq}
+					\SetKwFor{PourCh}{pour chaque}{faire}{fait}
+					\SetKwFor{PourTous}{pour tout}{faire}{fait}
+					\SetKwRepeat{Repeter}{répéter}{jusqu'à}
+					\SetKwIF{Si}{SinonSi}{Sinon}{si}{alors}{sinon si}{sinon}{{fin si}}
+					\SetKwSwitch{Match}{Case}{Other}{match}{ : }{cas}{autre cas}{{fin cas}}{{fin match}}
+					\Entree{Un jeu de données}
+					\Sortie{Les poids}
+					$w$ $\leftarrow$ valeurs aléatoires entre -1 et 1\\
+					\Repeter{nombre d'itération maximum atteint ou l'erreur globale est passée sous un seuil fixé}{
+						\PourCh{$exemple$ du training set}{
+							\PourCh{$couche$ dans le 	réseau}{
+								\PourCh{$noeud$ dans la $couche$}{
+									$sum$ $\leftarrow$ la somme des entrées\\
+									$sum$ $\leftarrow$ $sum + offset$\\
+									$noeud_{sortie}$ $\leftarrow$ $activation(sum)$
+								}
+							}
+							
+							\PourCh{$noeud$ dans la couche de sortie}{
+								$node_{error} \leftarrow \Delta(attendu, calculé)$						
+							}
+							
+							\PourCh{couche cachée dans le réseau}{
+								\PourCh{$noeud$ dans la couche}{
+									Calculer $node_{error}$\\
+									Mettre à jour le poids du n\oe ud dans le réseau.							
+								}
+							}
+							
+							Calculer l'erreur globale
+						}
+					}
+					\Retour $arbre$
+					\BlankLine
+				\end{algorithm}
+		\end{tiny}
 				
-				Heureusement ! Il existe un algorithme pour ajuster les poids \emph{en détectant lequel est le plus responsable de l'erreur}. Il s'agit de la backpropagation !				
+			
+			\end{frame}
+			
+			\begin{frame}
+				\frametitle{Backpropagation}
+				Pour faire simple :
+				\begin{itemize}
+					\item On initialise les poids aléatoirement
+					\item On présente un exemple et évalue l'erreur
+					\item On fait remonter l'erreur en fonction des poids
+					\item On ajuste les poids en fonction de l'erreur et continue à faire remonter l'erreur
+					\item On donne un autre exemple, et s'arrête après un certain temps ou si le NN est efficace
+				\end{itemize}
 			\end{frame}
 
+			\begin{frame}
+				\frametitle{Backpropagation}
+				\vspace{-2em}
+				\centerline{\includegraphics[width=0.8\linewidth]{img/bprop}}
+			\end{frame}
 
-			%Mettre un beau schema de la BP, avec les delta
-			% L'expliquer
 			
+	
+	
+	\section{Exemple en R}
+		\subsection{Choix de librairie}
+		\begin{frame}
+			\frametitle{Choix de librairie}
+			La librairie choisie est \textbf{neuralnet}. C'est une librairie de très haut niveau, mise à jour régulièrement, documentée, et avec une certaine communauté (qui a d'ailleurs écrit un tutoriel).
+		\end{frame}
+		
+		\subsection{Données utilisées et objectif}
+		\begin{frame}
+			\frametitle{Données utilisées et objectif}
+			\begin{wrapfigure}{l}{0.5\linewidth}
+				\vspace{-2em}
+				\includegraphics[width=\linewidth]{img/boston}
+			\end{wrapfigure}
+			On utilisera les données "Boston" fournies de base par RStudio. Celles-ci mettent en relation 13 variables sur une propriété et sa valeur.
+			\\
+			Notre but sera de prédire la valeur d'un bâtiment en fonction des 13 variables.
 			
-			%Attaquer l'exemple
-				%Choix du jour : DNN, exemple via les données de Boston (prix de l'habitation), avec un module neuralnet de R
-				%Utilisation du set de Boston
-				%Vérification : est-ce qu'il manque des valeurs ?
-				%Separation des donee de train et de test
-				%Normalisation de la matrice vers [0,1]
-				%Entrainement
-				%Test sur les données restantes
-				%Comparaison du resultat du NN avec la realite
-				%Test sur 10 exemples (melange des donnes)
-				%Pour generer une probabilite sur l'erreur de notre reseau
-				%Boite a moustache
+		\end{frame}
+		
+			
+		\subsection{Traitement des données}
+%		\subsection{Vérification}
+%		\subsection{Séparation des données}
+%		\subsection{Normalisation de la matrice des variables}
+		\subsection{Entraînement}
+		%\subsection{Test sur les données restantes}
+		\subsection{Comparaison du résultat du NN avec la réalité}
+		\subsection{Fiabilité du réseau}
+		%Test sur 10 exemples (melange des donnes)
+		%Pour generer une probabilite sur l'erreur de notre reseau
+		%Boite a moustache
 
 \section*{Sources}
 \begin{frame}
@@ -206,6 +344,7 @@
 	\url{https://www.youtube.com/watch?v=BR9h47Jtqyw}\\
 	\url{http://doctor-morbius.deviantart.com/}\\
 	\url{https://datascienceplus.com/fitting-neural-network-in-r/}%d'ou on tient le code !
+	\url{https://play.google.com/store/apps/details?id=com.seakleng.facedetection&hl=fr}
 \end{frame}
 
 \end{document}
