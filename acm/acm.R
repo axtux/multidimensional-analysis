@@ -2,7 +2,7 @@
 library("ade4")
 
 print("reading data file...")
-data = read.csv("../data/winequality-red.csv", sep=";")
+data = read.csv("../data/winequality-white-virg.csv", sep=";")
 
 print("dudi.acm requires factors, converting...")
 data2 = as.data.frame(data)
@@ -11,7 +11,7 @@ for(i in 1:ncol(data)) {
 }
 
 print("calculating acm...")
-acm = dudi.acm(data2, scannf=FALSE, nf=5)
+acm = dudi.acm(data2, scannf=FALSE)
 screeplot(acm)
 
 #burt = acm.burt(data2)

@@ -13,7 +13,7 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{subfig}
-
+\usepackage{listings}
 \usepackage{wrapfig} % in preamble
 \usetheme[navigation]{UMONS}
 
@@ -319,22 +319,199 @@
 			\end{wrapfigure}
 			On utilisera les données "Boston" fournies de base par RStudio. Celles-ci mettent en relation 13 variables sur une propriété et sa valeur.
 			\\
-			Notre but sera de prédire la valeur d'un bâtiment en fonction des 13 variables.
-			
+			Notre but sera de prédire la valeur d'un terrain en fonction des 13 variables.
 		\end{frame}
 		
 			
 		\subsection{Traitement des données}
-%		\subsection{Vérification}
-%		\subsection{Séparation des données}
-%		\subsection{Normalisation de la matrice des variables}
-		\subsection{Entraînement}
-		%\subsection{Test sur les données restantes}
-		\subsection{Comparaison du résultat du NN avec la réalité}
-		\subsection{Fiabilité du réseau}
-		%Test sur 10 exemples (melange des donnes)
-		%Pour generer une probabilite sur l'erreur de notre reseau
-		%Boite a moustache
+
+%OMG changer l'indentation dans une frame fragile casse tout
+%GG LATEX HEIN		
+\begin{frame}[fragile]
+\frametitle{Vérification}
+\begin{lstlisting}[language=R]
+#Utilisation du set de Boston
+set.seed(500)
+library(MASS)
+data <- Boston
+				
+#Verification : est-ce qu'il manque des valeurs ?
+print(apply(data,2,function(x) sum(is.na(x))))
+\end{lstlisting}				
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Séparation des données}
+On notera 75\% de données réservées à l'entraînement. Sont également générés des modèles linéaires et autre fonction d'estimation.
+\begin{lstlisting}[language=R]
+#Separation des donee de train et de test
+alpha <- 0.75
+#sample randomize les rangees
+index <- sample(1:nrow(data),round(alpha*nrow(data)))
+train <- data[index,]
+test <- data[-index,]
+lm.fit <- glm(medv~., data=train)
+summary(lm.fit)
+pr.lm <- predict(lm.fit,test)
+MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Séparation des données}
+On notera 75\% de données réservées à l'entraînement. Elles sont mélangées avant d'être séparées. Sont également générés des modèles linéaires et autre fonction d'estimation.
+\begin{lstlisting}[language=R]
+#Separation des donee de train et de test
+alpha <- 0.75
+#sample randomize les rangees
+index <- sample(1:nrow(data),round(alpha*nrow(data)))
+train <- data[index,]
+test <- data[-index,]
+lm.fit <- glm(medv~., data=train)
+summary(lm.fit)
+pr.lm <- predict(lm.fit,test)
+MSE.lm <- sum((pr.lm - test$medv)^2)/nrow(test)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Normalisation de la matrice}
+\begin{lstlisting}[language=R]
+#Normalisation de la matrice vers [0,1]
+maxs <- apply(data, 2, max) 
+mins <- apply(data, 2, min)
+scaled <- as.data.frame(scale(data, center = mins, scale = maxs - mins))
+train_ <- scaled[index,]
+test_ <- scaled[-index,]
+\end{lstlisting}
+\end{frame}
+
+\subsection{Entraînement}
+\begin{frame}[fragile]
+\frametitle{Entraînement}
+\begin{lstlisting}[language=R]
+#Donnees pretes, on utilise neuralnet
+library(neuralnet)
+	
+#Entrainement
+n <- names(train_)
+f <- as.formula(paste("medv ~", paste(n[!n %in% "medv"], collapse = " + ")))
+#On a donc un reseau 13 - 5 - 3 - 1 (car 13 en entree, une couche "hidden" de 5, une couche "hidden" de 3 et la sortie)
+nn <- neuralnet(f,data=train_,hidden=c(5,3),linear.output=T)
+plot(nn)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}\frametitle{Notre réseau}
+	\includegraphics[width=\linewidth]{img/nn_boston}
+\end{frame}	
+
+
+\subsection{Comparaison du résultat du NN avec un modèle linéaire}
+\begin{frame}[fragile]
+	\frametitle{Comparaison du résultat du NN avec un modèle linéaire}
+Qui nous affiche : [1] "21.6297593507225 15.7518370200153".\\
+Notre NN est meilleur qu'un modèle linéaire.
+\begin{lstlisting}[language=R]
+#Test sur les donnees restantes
+pr.nn <- compute(nn,test_[,1:13])
+pr.nn_ <- pr.nn$net.result*(max(data$medv)-min(data$medv))+min(data$medv)
+test.r <- (test_$medv)*(max(data$medv)-min(data$medv))+min(data$medv)
+MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test_)
+print(paste(MSE.lm,MSE.nn)) 
+#Comparaison du resultat du NN avec un ML
+par(mfrow=c(1,2))
+plot(test$medv,pr.nn_,col='red',main='Linear model vs predicted NN',pch=18,cex=0.7)
+points(test$medv,pr.lm,col='blue',pch=18,cex=0.7)
+abline(0,1,lwd=2)
+legend('bottomright',legend=c('NN','LM'),pch=18,col=c('red','blue'))
+	\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Comparaison du résultat du NN avec un modèle linéaire}
+		\begin{wrapfigure}{l}{0.6\linewidth}
+			\vspace{-7em}
+			\includegraphics[width=\linewidth]{img/nn_lm}
+		\end{wrapfigure}
+		La valeur obtenue en fonction de la valeur attendue. Pour bien faire, elle serait égale. (Ce que représente la droite tracée)
+\end{frame}
+
+		
+\subsection{Fiabilité du réseau}
+\begin{frame}[fragile]
+	\frametitle{Fiabilité du réseau}
+	Préparation à la boucle, qui va générer 10 réseaux différents. On se contente de 10 car ça consomme déjà pas mal de temps de calcul.
+\begin{lstlisting}[language=R]
+#Test sur 10 exemples (melange des donnes)
+#Pour generer une probabilite sur l'erreur de notre reseau
+library(boot)
+set.seed(200)
+lm.fit <- glm(medv~.,data=data)
+cv.glm(data,lm.fit,K=10)$delta[1]
+	
+set.seed(450)
+cv.error <- NULL
+k <- 10
+	
+library(plyr) 
+pbar <- create_progress_bar('text')
+pbar$init(k)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Fiabilité du réseau}
+	Ici, 90\% réservé à l'entraînement, calcul de l'erreur. Ici, donne 10.32697995. On serait donc plutôt à 90\% d'efficacité contre 85\% précédemment.
+	\begin{lstlisting}[language=R]
+for(i in 1:k){
+	alpha = 0.90 #attention, alpha different du precedant!
+	index <- sample(1:nrow(data),round(alpha*nrow(data)))
+	train.cv <- scaled[index,]
+	test.cv <- scaled[-index,]
+	nn <- neuralnet(f,data=train.cv,hidden=c(5,2),linear.output=T)
+	pr.nn <- compute(nn,test.cv[,1:13])
+	pr.nn <- pr.nn$net.result*(max(data$medv)-min(data$medv))+min(data$medv)
+	test.cv.r <- (test.cv$medv)*(max(data$medv)-min(data$medv))+min(data$medv)
+	cv.error[i] <- sum((test.cv.r - pr.nn)^2)/nrow(test.cv)
+	pbar$step()
+}
+print(mean(cv.error))	
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Fiabilité du réseau}
+	On utilise la moyenne et la variance calculées précédemment pour générer une boite à moustache (qui aurait bien plus de sens avec plus de 10 tests)
+	\begin{lstlisting}[language=R]
+	#Boite a moustache
+	boxplot(cv.error,xlab='MSE CV',col='cyan',
+	border='blue',names='CV error (MSE)',
+	main='CV error (MSE) for NN',horizontal=TRUE)
+	\end{lstlisting}
+	\vspace{-2em}
+	\includegraphics[width=0.3\linewidth]{img/moustache}
+\end{frame}
+
+\subsection{Conclusion}
+\begin{frame}	\frametitle{Conclusion}
+	\begin{centering}
+		\vspace{-2em}
+		\includegraphics[width=0.3\linewidth]{img/dollar}
+		
+		\huge Félicitations !\\
+		\normalsize
+		 Nous pouvons prédire la valeur d'un terrain à Boston (précis à 90\%)!\\A nous les bonnes affaires !\\
+	\end{centering}
+	
+\end{frame}
+
+
+
 
 \section*{Sources}
 \begin{frame}
