@@ -1,15 +1,20 @@
 
+# change current direcotry to data
+script.dir = dirname(sys.frame(1)$ofile)
+data.dir = paste(script.dir, "..", "data", sep='/')
+setwd(data.dir)
+
+# number of kept axes
+nf=5
+
 print("reading data file...")
-data = read.csv("../data/winequality-red.csv", sep=";")
+data = read.csv("winequality-red.csv", sep=";")
 
 # min, max and mean
 print(summary(data))
 
-# print 32 classes to help identify classes limits
 classes = data.frame(data)
 for(n in names(data)) {
-  # Brooks-Carruthers formula classes = 5 * log(length(data), 10)
-  
   # same interval classes
   classes[,n] = cut(data[,n], 5, include.lowest=TRUE, right=FALSE)
   
@@ -19,6 +24,3 @@ for(n in names(data)) {
   print(n)
   print(summary(classes[,n]))
 }
-
-
-
