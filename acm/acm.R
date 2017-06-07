@@ -40,7 +40,7 @@ for(i in 1:ncol(classes)) {
 }
 
 print("calculating acm...")
-acm = dudi.acm(classes, scannf=FALSE, nf=nf)
+acm = dudi.acm(classes, scannf=FALSE, nf=KEPT_AXES)
 
 # graph of axis inertia
 screeplot(acm)
@@ -63,8 +63,8 @@ if(BURT_DISJONCTIF) {
   burt = acm.burt(classes, classes)
   disjonctif = acm.disjonctif(classes)
   
-  coa.burt = dudi.coa(burt, scannf="FALSE", nf=nf)
-  coa.disjonctif = dudi.coa(disjonctif, scannf="FALSE", nf=nf)
+  coa.burt = dudi.coa(burt, scannf="FALSE", nf=KEPT_AXES)
+  coa.disjonctif = dudi.coa(disjonctif, scannf="FALSE", nf=KEPT_AXES)
   
   scatter(coa.burt)
   scatter(coa.disjonctif)
