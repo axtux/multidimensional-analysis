@@ -1,6 +1,6 @@
 
 # number of kept axes
-KEPT_AXES=5
+KEPT_AXES=3
 # if true, classes will be created with more or less same quantity ; if false, classes are created with equal range value
 QUANTITY_CLASSES = TRUE
 # add burt/disjonctif
@@ -42,6 +42,8 @@ for(i in 1:ncol(classes)) {
 print("calculating acm...")
 acm = dudi.acm(classes, scannf=FALSE, nf=KEPT_AXES)
 
+#factor correlation
+print(acm$co)
 # graph of axis inertia
 screeplot(acm)
 # inertia values
@@ -56,7 +58,7 @@ barplot(acm$cr[,1], names.arg=row.names(acm$cr), las = 2)
 # modalities graph, more precision with clabel=0, arrow with s.arrow
 s.label(acm$co, 1, 2)
 # variable repartition
-s.class(acm$li, as.factor(classes$quality), xax=1)
+s.class(acm$li, as.factor(classes$quality), col=c(1, 2, 3), xax=1, yax=2)
 
 if(BURT_DISJONCTIF) {
   # burt / disjonctif
@@ -67,10 +69,10 @@ if(BURT_DISJONCTIF) {
   coa.disjonctif = dudi.coa(disjonctif, scannf="FALSE", nf=KEPT_AXES)
   
   scatter(coa.burt)
-  scatter(coa.disjonctif)
+  #scatter(coa.disjonctif)
   
   conts = inertia.dudi(coa.burt)
-  print("Contributions et cos^2:")
+  print("Contributions")
   print(conts)
 }
 
